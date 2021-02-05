@@ -1,0 +1,5 @@
+- Battery 
+- Temperature Sensor
+- LED Matrix
+- IR Proximity Sensor
+- Gesture Sensor 
