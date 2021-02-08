@@ -1,0 +1,26 @@
+import board
+from time import sleep
+from analogio import AnalogIn
+import displayio
+from adafruit_st7735r import ST7735R
+
+spi = board.SPI()
+cs = board.D11
+dc = board.D10
+rst = board.D9
+displayio.release_displays()
+display_bus = displayio.FourWire(spi, command=dc, chip_select=cs, reset=rst)
+display = ST7735R(display_bus, width=128, height=160)
+
+battery = AnalogIn(board.BATTERY)
+
+minV = 1000
+maxV = 0
+
+while True:
+    v = battery.value * 3.3 / 65535 * 2
+    minV = min(v, minV)
+    maxV = max(v, maxV)
+    print("Battery: {0:.2f}V\n({1:.2f}V - {2:.2f}V)".format(v, minV, maxV))
+    sleep(2)
+    
