@@ -18,7 +18,7 @@ try:
           GPIO.output(buzzer,True)
           print "Object Detected"
           while GPIO.input(sensor):
-              time.sleep(0.2)
+              time.sleep(10)
       else:
           GPIO.output(buzzer,False)
 
