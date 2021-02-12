@@ -29,5 +29,5 @@ while True:
     data = {"corevoltage": output}
 
     #creates child under core voltage and stores data under reading
-    db.child("reading").set(data)
+    db.child("reading").push(data)
     time.sleep(5)
