@@ -1,6 +1,5 @@
 from time import sleep
 import firebase
-from datetime import datetime
 from apds9960.const import *
 from apds9960 import  APDS9960
 import pyrebase
@@ -43,9 +42,7 @@ while True:
     sleep(0.5)
     if apds.isGestureAvailable():
         motion = apds.readGesture()
-        now=datetime.now()
         disp = "{}".format(dirs.get(motion, "unknown"))
         print("Gesture={}".format( disp)) 
 	
         db.child("data").child("newdata").update({"movement":disp})
-       	db.child("Time").update({"time":now.strftime("%H:%M:%S")})
