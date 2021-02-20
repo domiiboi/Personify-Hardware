@@ -12,8 +12,8 @@
   - Ethernet Cable
   - HDMI Cable
   - Micro USB Power Supply Adapter
-  - Proximity Sensor PCB
   - Mouse and Mousepad/Keyboard with USB
+  - Proximity Sensor PCB
 
 [Buyapi Card Reader](https://buyapi.ca/product/usb-2-0-keychain-micro-sd-card-reader)  
 
