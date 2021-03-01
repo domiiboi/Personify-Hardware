@@ -12,10 +12,9 @@ GPIO.setup(sensor,GPIO.IN)
 GPIO.setup(buzzer,GPIO.OUT)
 
 GPIO.output(buzzer,False)
-print "IR Sensor Ready....."
-print " "
+print ("IR Sensor Ready.....")
+print (" ")
 config = {
-  "apiKey": "AIzaSyDBeDtDn460CpLwkfpSMXWC1nclMAb-N4I",
   "authDomain": "lm75-4192f.firebaseapp.com",
   "databaseURL": "https://lm75-4192f-default-rtdb.firebaseio.com",
   "storageBucket": "lm75-4192f.appspot.com"
@@ -28,13 +27,13 @@ try:
    while True:
       if GPIO.input(sensor):
           GPIO.output(buzzer,True)
-          print "Object Detected"
-		data={"proximity":1}
-  		db.child("PIR").set(data)
+          print ("Object Detected")
+                data={"proximity":1}
+                db.child("PIR").set(data)
           while GPIO.input(sensor):
               time.sleep(10)
       else:
-          GPIO.output(buzzer,False)
+	        GPIO.output(buzzer,False)
 		data={"proximity":0}
   		db.child("PIR").set(data)
 
