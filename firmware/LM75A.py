@@ -35,7 +35,17 @@ while True:
   temperature = (raw / 32.0) / 8.0
   
   #Push Data
-  data={"temp":temperature}
-  db.child("LM75").set(data)
+ url = "https://us-central1-personify-c98fc.cloudfunctions.net/postDeviceData"
+    data = {
+    "uid": "XHVfPr23F7Meg0QuwEkYFvI8Fqd2",
+    "accessCode": "apple",
+    "DATA": {
+        "value": temperature,
+        "type": "TEMP"
+      }
+  }
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+    print(r.text)
   print ("{:.1f}C".format(temperature))
-  time.sleep(5)
+ 
