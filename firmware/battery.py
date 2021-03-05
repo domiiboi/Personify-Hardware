@@ -2,6 +2,8 @@
 from vcgencmd import Vcgencmd
 import pyrebase
 import time
+import requests
+import json
 
 #firebase
 config = {
@@ -21,7 +23,9 @@ while True:
   #function call to read core coltage
     vcgm = Vcgencmd()
     output = vcgm.measure_volts("core")
-   
+
+    
+    
    #stores variable in output
     print(output)
    
@@ -30,4 +34,24 @@ while True:
 
     #creates child under core voltage and stores data under reading
     db.child("reading").push(data)
-    time.sleep(5)
+
+
+    url = "https://us-central1-personify-c98fc.cloudfunctions.net/postDeviceData"
+    data = {
+        "uid": "XHVfPr23F7Meg0QuwEkYFvI8Fqd2",
+        "accessCode": "apple",
+        "DATA": {
+        "value": output,
+        "type": "CORE_VOLTAGE"
+        }
+    }
+
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+
+
+    print(r.text)
+
+
+    time.sleep(10)
+
