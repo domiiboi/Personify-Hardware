@@ -15,6 +15,7 @@ GPIO.output(buzzer,False)
 print ("IR Sensor Ready.....")
 print (" ")
 config = {
+  "apiKey": "AIzaSyDBeDtDn460CpLwkfpSMXWC1nclMAb-N4I",
   "authDomain": "lm75-4192f.firebaseapp.com",
   "databaseURL": "https://lm75-4192f-default-rtdb.firebaseio.com",
   "storageBucket": "lm75-4192f.appspot.com"
