@@ -25,18 +25,12 @@ db = firebase.database()
 
 try: 
    while True:
-      if GPIO.input(sensor):
+          GPIO.input(sensor)
           GPIO.output(buzzer,True)
           print ("Object Detected")
                 data={"proximity":1}
-                db.child("PIR").set(data)
-          while GPIO.input(sensor):
-              time.sleep(10)
-      else:
-	        GPIO.output(buzzer,False)
-		data={"proximity":0}
-  		db.child("PIR").set(data)
-
+                db.child("PIR").set(data)          
+                time.sleep(2)
 
 except KeyboardInterrupt:
     GPIO.cleanup()
