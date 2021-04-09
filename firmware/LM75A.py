@@ -4,7 +4,6 @@
 
 import sys
 import smbus
-import pyrebase
 import time
 
 # By default the address of LM75A is set to 0x48
