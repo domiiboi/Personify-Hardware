@@ -7,16 +7,6 @@ import smbus
 import pyrebase
 import time
 
-config = {
-  "apiKey": "AIzaSyDBeDtDn460CpLwkfpSMXWC1nclMAb-N4I",
-  "authDomain": "lm75-4192f.firebaseapp.com",
-  "databaseURL": "https://lm75-4192f-default-rtdb.firebaseio.com",
-  "storageBucket": "lm75-4192f.appspot.com"
-}
-
-firebase = pyrebase.initialize_app(config)
-db = firebase.database()
-
 # By default the address of LM75A is set to 0x48
 # aka A0, A1, and A2 are set to GND (0v).
 address = 0x48
