@@ -16,10 +16,12 @@
 # http://effbot.org/imagingbook/imagedraw.htm
 from os import X_OK, stat
 from typing import KeysView
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import time, sched, requests, json
+import PIL
+import numpy as np
 from requests.api import put
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 # Configuration for the matrix
 
 
@@ -36,41 +38,213 @@ options.limit_refresh_rate_hz = 240
 options.pwm_lsb_nanoseconds = 100
 matrix = RGBMatrix(options = options)
 
-fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 6)
+#fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 6)
 
 
 def displayStat(matrix, stat, value):
-    shirtImage = Image.open("images/shirt-2.png").convert("RGB")
-    statsImage = Image.new("RGB", (32,32))
-
-    fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 10)
 
 
-    #Display Width & Height
-    W,H = (64, 32)
+    #Custon light display
+    if(stat == "LIGHT"):
+        
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
 
-    shirtImage.thumbnail((matrix.width, matrix.height), Image.ANTIALIAS)
+        #Setup the two "canvases"
+        image = Image.open("images/idea.png").convert("RGB")
+        statsImage = Image.new("RGB", (32,32))
+        Invertedimage = PIL.ImageOps.invert(image)
+
+        #Display Width & Height
+        W,H = (64, 32)
+
+        Invertedimage.thumbnail((28, 28), Image.ANTIALIAS)
 
 
+        drawStats = ImageDraw.Draw(statsImage)
 
-    drawStats = ImageDraw.Draw(statsImage)
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 10)
+        #Static text at the top
+        w, h = fnt.getsize(stat)
+        drawStats.text(((32-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
+        previousHeight = h
+        w, h = fnt.getsize(str(value))
+        drawStats.text(((31-w)/2,previousHeight), str(value), font = fnt, fill=(200,200,200))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 31 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
 
 
-    #Static text at the top
-    w, h = fnt.getsize(stat)
-    drawStats.text(((32-w)/2,0), stat, font = fnt, fill=(200,200,200))
+    #Custon temp display
+    if(stat == "TEMP"):
+        
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
 
-    previousHeight = h
-    w, h = fnt.getsize(str(value))
-    drawStats.text(((31-w)/2,previousHeight), str(value), font = fnt, fill=(200,200,200))
+        #Setup the two "canvases"
+        image = Image.open("images/thermometer.png").convert("RGB")
+        statsImage = Image.new("RGB", (32,32))
+        Invertedimage = PIL.ImageOps.invert(image)
 
-    # # pixels[6,9] = (255,255,255)
-    matrix.Clear()
-    matrix.SetImage(shirtImage, 0, 0)
-    matrix.SetImage(statsImage, 31 ,0)
-    time.sleep(10)
+        #Display Width & Height
+        W,H = (64, 32)
 
-    matrix.Clear()
+        Invertedimage.thumbnail((28, 28), Image.ANTIALIAS)
+
+
+        drawStats = ImageDraw.Draw(statsImage)
+
+        # fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 9)
+        # #Static text at the top
+        # w, h = fnt.getsize(stat)
+        # drawStats.text(((32-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
+        #previousHeight = h
+        w, h = fnt.getsize(str(value) + "°C")
+        drawStats.text(((31-w)/2,(H-h)/2), str(value) + "°C", font = fnt, fill=(200,0,0))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 31 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
+
+
+    #Custon VOLT display
+    if(stat == "VOLT"):
+
+
+        statsImage = Image.new("RGB", (64,32))
+
+        W,H = (64, 32)
+        
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
+        #Static text at the top
+        w, h = fnt.getsize(stat)
+
+        drawStats = ImageDraw.Draw(statsImage)
+
+        drawStats.text(((W-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
+        #previousHeight = h
+        w, h = fnt.getsize(str(value))
+        drawStats.text(((W-w)/2,(H-h)/2 + 4), str(value), font = fnt, fill=(80,50,200))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        #matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 0 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
+
+    #Custon POSTS display
+    if(stat == "POSTS"):
+        
+        statsImage = Image.new("RGB", (64,32))
+
+        W,H = (64, 32)
+        
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
+        #Static text at the top
+        w, h = fnt.getsize(stat)
+
+        drawStats = ImageDraw.Draw(statsImage)
+
+        drawStats.text(((W-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
+        #previousHeight = h
+        w, h = fnt.getsize(str(value))
+        drawStats.text(((W-w)/2,(H-h)/2 + 4), str(value), font = fnt, fill=(200,20,80))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        #matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 0 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
+
+    #Custon temp display
+    if(stat == "FOLLOWERS"):
+        
+        statsImage = Image.new("RGB", (64,32))
+
+        W,H = (64, 32)
+        
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 9)
+
+        w, h = fnt.getsize(stat)
+
+        drawStats = ImageDraw.Draw(statsImage)
+
+        drawStats.text(((W-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/DejaVuSans", 13)
+        #previousHeight = h
+        w, h = fnt.getsize(str(value))
+        drawStats.text(((W-w)/2,(H-h)/2 + 4), str(value), font = fnt, fill=(200,200,200))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        #matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 0 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
+
+    
+    #Custon VOLT display
+    if(stat == "LIKES"):
+
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
+
+        #Setup the two "canvases"
+        image = Image.open("images/like.png").convert("RGB")
+        statsImage = Image.new("RGB", (32,32))
+        Invertedimage = PIL.ImageOps.invert(image)
+
+        #Display Width & Height
+        W,H = (64, 32)
+
+        Invertedimage.thumbnail((28, 28), Image.ANTIALIAS)
+
+
+        drawStats = ImageDraw.Draw(statsImage)
+
+        # fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 9)
+        # #Static text at the top
+        # w, h = fnt.getsize(stat)
+        # drawStats.text(((32-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+        #previousHeight = h
+        w, h = fnt.getsize(str(value))
+        drawStats.text(((31-w)/2,(H-h)/2), str(value), font = fnt, fill=(200,200,200))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 31 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
+
+    
 
 
 
@@ -127,19 +301,19 @@ while True:
                 obj = x[keys]
                 numOfPosts = obj
                 print('Number Of Posts: ', str(obj))
-                displayStat(matrix, "Posts", numOfPosts)
+                displayStat(matrix, "POSTS", numOfPosts)
 
             if(keys == 'numOfFollowers'):
                 obj = x[keys]
                 numOfFollowers = obj
                 print('Number of Followers: ', str(obj))
-                displayStat(matrix, "Followers", numOfFollowers)
+                displayStat(matrix, "FOLLOWERS", numOfFollowers)
             
             if(keys == 'percentOfLikes'):
                 obj = x[keys]
                 percentOfLikes = obj
                 print('Percent of likes: ', str(obj))
-                displayStat(matrix, "Likes %", percentOfLikes)
+                displayStat(matrix, "LIKES", percentOfLikes)
 
 
 
