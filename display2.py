@@ -33,7 +33,7 @@ options.cols = 64
 options.hardware_mapping = 'regular'  # If you have an Adafruit HAT: 'adafruit-hat'
 options.scan_mode = 1
 options.gpio_slowdown = 4
-options.show_refresh_rate = 1
+#options.show_refresh_rate = 1
 options.limit_refresh_rate_hz = 240
 options.pwm_lsb_nanoseconds = 100
 matrix = RGBMatrix(options = options)
@@ -104,7 +104,7 @@ def displayStat(matrix, stat, value):
         # w, h = fnt.getsize(stat)
         # drawStats.text(((32-w)/2,0), stat, font = fnt, fill=(200,200,200))
 
-        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 13)
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11)
         #previousHeight = h
         w, h = fnt.getsize(str(value) + "°C")
         drawStats.text(((31-w)/2,(H-h)/2), str(value) + "°C", font = fnt, fill=(200,0,0))
@@ -244,6 +244,34 @@ def displayStat(matrix, stat, value):
 
         matrix.Clear()
 
+    #Custon temp display
+    if(stat == "GESTURE"):
+        
+        statsImage = Image.new("RGB", (64,32))
+
+        W,H = (64, 32)
+        
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/dejavu/DejaVuSans.ttf", 9)
+
+        w, h = fnt.getsize(stat)
+
+        drawStats = ImageDraw.Draw(statsImage)
+
+        drawStats.text(((W-w)/2,0), stat, font = fnt, fill=(200,200,200))
+
+        fnt = ImageFont.truetype("/user/share/fonts/truetype/DejaVuSans", 13)
+        #previousHeight = h
+        w, h = fnt.getsize(value)
+        drawStats.text(((W-w)/2,(H-h)/2 + 4), value, font = fnt, fill=(200,200,200))
+
+        # # pixels[6,9] = (255,255,255)
+        matrix.Clear()
+        #matrix.SetImage(Invertedimage, 2, 2)
+        matrix.SetImage(statsImage, 0 ,0)
+        time.sleep(2)
+
+        matrix.Clear()
     
 
 
@@ -265,7 +293,7 @@ while True:
     values = json.loads(r.text)
 
     dataObject = values['data']
-    #print(dataObject)
+    print(dataObject)
 
     coreVoltage = 0;
     temperature = 0;
@@ -273,6 +301,7 @@ while True:
     numOfFollowers = 0;
     percentOfLikes = 0;
     numOfPosts = 0;
+    gesture = "";
 
     print('\n')
     #print(dataObject)
@@ -314,6 +343,12 @@ while True:
                 percentOfLikes = obj
                 print('Percent of likes: ', str(obj))
                 displayStat(matrix, "LIKES", percentOfLikes)
+
+            if(keys == 'GESTURE'):
+                obj = x[keys]
+                gesture = obj['value']
+                print('Gesture: ', obj['value'])
+                displayStat(matrix, "GESTURE", gesture)
 
 
 
