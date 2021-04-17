@@ -8,7 +8,7 @@ import json
 #loop 5 second increments
 
 while True:
-  #function call to read core coltage
+  #function call to read IR Sensor output
     vcgm = Vcgencmd()
     output = vcgm.measure_volts("core")
  
@@ -24,7 +24,7 @@ while True:
         "accessCode": "apple",
         "DATA": {
         "value": output,
-        "type": "CORE_VOLTAGE"
+        "type": "IR"
         }
     }
 
