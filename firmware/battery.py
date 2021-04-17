@@ -8,7 +8,7 @@ import json
 #loop 5 second increments
 
 while True:
-  #function call to read IR Sensor output
+  #function call to read Voltage Sensor output
     vcgm = Vcgencmd()
     output = vcgm.measure_volts("core")
  
