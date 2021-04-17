@@ -24,7 +24,7 @@ while True:
         "accessCode": "apple",
         "DATA": {
         "value": output,
-        "type": "IR"
+        "type": "CORE_VOLTAGE"
         }
     }
 
